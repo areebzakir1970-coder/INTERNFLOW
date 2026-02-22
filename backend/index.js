@@ -82,12 +82,15 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || 8000;
 
-// Serve built frontend assets
-app.use(express.static(path.join(_dirname, "/frontend/dist")));
-// Express 5-safe catch-all: serve SPA for non-API routes
-app.get(/^\/(?!api\/).*/, (req, res) => {
-  res.sendFile(path.join(_dirname, 'frontend', 'dist', 'index.html'));
-});
+// Serve built frontend assets (only in local development)
+// In production, frontend is deployed separately on Vercel
+if (process.env.NODE_ENV !== 'production') {
+  app.use(express.static(path.join(_dirname, "/frontend/dist")));
+  // Express 5-safe catch-all: serve SPA for non-API routes
+  app.get(/^\/(?!api\/).*/, (req, res) => {
+    res.sendFile(path.join(_dirname, 'frontend', 'dist', 'index.html'));
+  });
+}
 
 // API routes
 app.use('/api/v1/user', userRoutes);

@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import Navbar from '../shared/Navbar'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
-import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { RadioGroup } from '@/components/ui/radio-group'
 import { toast, Toaster } from 'sonner'
 import axiosInstance from '../../utils/axiosConfig'
@@ -22,7 +22,7 @@ const Login = () => {
       role: 'student',
     });
     const {loading} = useSelector((state) => state.auth);
-     const Navigate = useNavigate();
+     const navigate = useNavigate();
      const dispatch = useDispatch();
     const changeEventHandler = (e) => {
       setInput({
@@ -48,7 +48,7 @@ const Login = () => {
       if(res.data.success) {
         dispatch(setUser(res.data.user));
         toast.success(`Welcome, ${res.data.user?.fullname || 'User'}!`);
-        Navigate('/');
+        navigate('/');
       }
     } catch (error) {
       console.error(error);
@@ -86,7 +86,7 @@ const Login = () => {
         // Set the user data in Redux (which will be persisted)
         dispatch(setUser(res.data.user));
         toast.success(res.data.message);
-        Navigate('/');
+        navigate('/');
       }
     } catch (error) {
       console.error(error);

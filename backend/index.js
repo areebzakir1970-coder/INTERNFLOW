@@ -18,13 +18,23 @@ const httpServer = createServer(app);
 // Socket.IO setup
 const io = new Server(httpServer, {
   cors: {
-    origin: [
-      "http://localhost:5173", 
-      "http://localhost:3000",
-      "https://jobportal-xi-two.vercel.app",
-      "https://jobportal-oysq599u5-m-areebs-projects.vercel.app",
-      "https://blissful-gratitude-production-e30b.up.railway.app"
-    ],
+    origin: function (origin, callback) {
+      const allowedOrigins = [
+        "http://localhost:5173", 
+        "http://localhost:3000",
+        "https://jobportal-xi-two.vercel.app",
+        "https://blissful-gratitude-production-e30b.up.railway.app"
+      ];
+      
+      // Allow all vercel.app domains
+      const isVercelDomain = origin && origin.includes('vercel.app');
+      
+      if (!origin || allowedOrigins.includes(origin) || isVercelDomain) {
+        callback(null, true);
+      } else {
+        callback(null, false);
+      }
+    },
     methods: ["GET", "POST"],
     credentials: true
   }
@@ -38,14 +48,26 @@ app.get('/api/health', (req, res) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+// Dynamic CORS configuration to handle all Vercel preview deployments
 const corsOptions = {
-  origin: [
-    'http://localhost:5173', 
-    'http://localhost:3000',
-    'https://jobportal-xi-two.vercel.app',
-    'https://jobportal-oysq599u5-m-areebs-projects.vercel.app',
-    'https://blissful-gratitude-production-e30b.up.railway.app'
-  ],
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'http://localhost:5173', 
+      'http://localhost:3000',
+      'https://jobportal-xi-two.vercel.app',
+      'https://blissful-gratitude-production-e30b.up.railway.app'
+    ];
+    
+    // Allow all vercel.app domains
+    const isVercelDomain = origin && origin.includes('vercel.app');
+    
+    if (!origin || allowedOrigins.includes(origin) || isVercelDomain) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization']
